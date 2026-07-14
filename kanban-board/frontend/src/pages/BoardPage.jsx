@@ -1,7 +1,14 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Sparkles, FileText, Users, Activity, Search, ChevronLeft } from "lucide-react";
+import {
+  Sparkles,
+  FileText,
+  Users,
+  Activity,
+  Search,
+  ChevronLeft,
+} from "lucide-react";
 import { useBoard } from "../hooks/useBoard";
 import { useLayout } from "../components/layout/AppLayout";
 import { aiApi } from "../lib/api";
@@ -24,8 +31,12 @@ const BoardPage = () => {
   const { boardId } = useParams();
   const { openCreateBoard } = useLayout();
   const b = useBoard(boardId);
-
-  const [taskModal, setTaskModal] = useState({ open: false, task: null, columnId: null });
+  console.log("board - ", b);
+  const [taskModal, setTaskModal] = useState({
+    open: false,
+    task: null,
+    columnId: null,
+  });
   const [aiGen, setAiGen] = useState({ open: false, columnId: null });
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [membersOpen, setMembersOpen] = useState(false);
@@ -42,7 +53,10 @@ const BoardPage = () => {
       if (filterAssignee && t.assignee_id !== filterAssignee) return false;
       if (search) {
         const q = search.toLowerCase();
-        if (!t.title.toLowerCase().includes(q) && !(t.description || "").toLowerCase().includes(q))
+        if (
+          !t.title.toLowerCase().includes(q) &&
+          !(t.description || "").toLowerCase().includes(q)
+        )
           return false;
       }
       return true;
@@ -73,7 +87,9 @@ const BoardPage = () => {
       <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
         <p className="text-lg font-semibold">Couldn’t load this board</p>
         <p className="text-muted">{b.error}</p>
-        <Link to="/dashboard"><Button variant="outline">Back to dashboard</Button></Link>
+        <Link to="/dashboard">
+          <Button variant="outline">Back to dashboard</Button>
+        </Link>
       </div>
     );
   }
@@ -86,17 +102,32 @@ const BoardPage = () => {
           <AvatarStack users={b.presence} size="xs" max={3} />
         </div>
       )}
-      <Button size="sm" variant="ghost" onClick={() => setActivityOpen(true)} title="Activity">
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => setActivityOpen(true)}
+        title="Activity"
+      >
         <Activity className="h-4 w-4" />
       </Button>
-      <Button size="sm" variant="ghost" onClick={() => setMembersOpen(true)} title="Members">
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => setMembersOpen(true)}
+        title="Members"
+      >
         <Users className="h-4 w-4" />
       </Button>
       <Button size="sm" variant="outline" onClick={() => setSummaryOpen(true)}>
-        <FileText className="h-4 w-4" /> <span className="hidden lg:inline">Summary</span>
+        <FileText className="h-4 w-4" />{" "}
+        <span className="hidden lg:inline">Summary</span>
       </Button>
-      <Button size="sm" onClick={() => setAiGen({ open: true, columnId: b.columns[0]?.id })}>
-        <Sparkles className="h-4 w-4" /> <span className="hidden lg:inline">AI tasks</span>
+      <Button
+        size="sm"
+        onClick={() => setAiGen({ open: true, columnId: b.columns[0]?.id })}
+      >
+        <Sparkles className="h-4 w-4" />{" "}
+        <span className="hidden lg:inline">AI tasks</span>
       </Button>
     </div>
   );
@@ -106,12 +137,18 @@ const BoardPage = () => {
       <Topbar
         title={
           <span className="flex items-center gap-2">
-            <Link to="/dashboard" className="text-faint hover:text-ink md:hidden">
+            <Link
+              to="/dashboard"
+              className="text-faint hover:text-ink md:hidden"
+            >
               <ChevronLeft className="h-4 w-4" />
             </Link>
             {b.board ? (
               <>
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: b.board.color }} />
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: b.board.color }}
+                />
                 {b.board.title}
               </>
             ) : (
@@ -135,17 +172,36 @@ const BoardPage = () => {
             className="h-9 w-52 rounded-full border border-line bg-surface pl-9 pr-4 text-xs shadow-[var(--shadow-card)] outline-none transition-all duration-200 focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/15"
           />
         </div>
-        <FilterSelect value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
+        <FilterSelect
+          value={filterPriority}
+          onChange={(e) => setFilterPriority(e.target.value)}
+        >
           <option value="">All priorities</option>
-          {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+          {PRIORITIES.map((p) => (
+            <option key={p.value} value={p.value}>
+              {p.label}
+            </option>
+          ))}
         </FilterSelect>
-        <FilterSelect value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)}>
+        <FilterSelect
+          value={filterAssignee}
+          onChange={(e) => setFilterAssignee(e.target.value)}
+        >
           <option value="">All assignees</option>
-          {b.members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+          {b?.members &&
+            b.members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
         </FilterSelect>
         {(filterPriority || filterAssignee || search) && (
           <button
-            onClick={() => { setFilterPriority(""); setFilterAssignee(""); setSearch(""); }}
+            onClick={() => {
+              setFilterPriority("");
+              setFilterAssignee("");
+              setSearch("");
+            }}
             className="rounded-full px-3 py-1.5 text-xs font-medium text-faint transition-colors hover:bg-surface-2 hover:text-ink"
           >
             Clear
@@ -160,15 +216,21 @@ const BoardPage = () => {
       <div className="flex-1 overflow-hidden pt-4">
         {b.loading ? (
           <div className="flex gap-4 px-6">
-            {[0, 1, 2, 3].map((i) => <ColumnSkeleton key={i} />)}
+            {[0, 1, 2, 3].map((i) => (
+              <ColumnSkeleton key={i} />
+            ))}
           </div>
         ) : (
           <KanbanBoard
             columns={b.columns}
             tasks={filteredTasks}
             actions={b}
-            onTaskClick={(task) => setTaskModal({ open: true, task, columnId: task.column_id })}
-            onAddTask={(columnId) => setTaskModal({ open: true, task: null, columnId })}
+            onTaskClick={(task) =>
+              setTaskModal({ open: true, task, columnId: task.column_id })
+            }
+            onAddTask={(columnId) =>
+              setTaskModal({ open: true, task: null, columnId })
+            }
             onAiGenerate={(columnId) => setAiGen({ open: true, columnId })}
             onAddColumn={() => setAddColumnOpen(true)}
           />
@@ -178,7 +240,9 @@ const BoardPage = () => {
       {/* Modals */}
       <TaskModal
         open={taskModal.open}
-        onClose={() => setTaskModal({ open: false, task: null, columnId: null })}
+        onClose={() =>
+          setTaskModal({ open: false, task: null, columnId: null })
+        }
         task={taskModal.task}
         defaultColumnId={taskModal.columnId}
         columns={b.columns}
@@ -194,7 +258,11 @@ const BoardPage = () => {
         defaultColumnId={aiGen.columnId}
         onCreated={(tasks) => tasks.forEach(b.upsertTask)}
       />
-      <AISummaryModal open={summaryOpen} onClose={() => setSummaryOpen(false)} boardId={boardId} />
+      <AISummaryModal
+        open={summaryOpen}
+        onClose={() => setSummaryOpen(false)}
+        boardId={boardId}
+      />
       <MembersModal
         open={membersOpen}
         onClose={() => setMembersOpen(false)}
@@ -204,7 +272,11 @@ const BoardPage = () => {
         canManage={canManage}
         ownerId={b.board?.owner_id}
       />
-      <ActivityFeed open={activityOpen} onClose={() => setActivityOpen(false)} boardId={boardId} />
+      <ActivityFeed
+        open={activityOpen}
+        onClose={() => setActivityOpen(false)}
+        boardId={boardId}
+      />
       <PromptDialog
         open={addColumnOpen}
         onClose={() => setAddColumnOpen(false)}

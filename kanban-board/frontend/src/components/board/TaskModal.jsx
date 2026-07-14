@@ -22,7 +22,16 @@ const empty = (columnId) => ({
   column_id: columnId || "",
 });
 
-const TaskModal = ({ open, onClose, task, defaultColumnId, columns, members, actions, onBreakdown }) => {
+const TaskModal = ({
+  open,
+  onClose,
+  task,
+  defaultColumnId,
+  columns,
+  members,
+  actions,
+  onBreakdown,
+}) => {
   const isEdit = Boolean(task);
   const [form, setForm] = useState(empty(defaultColumnId));
   const [saving, setSaving] = useState(false);
@@ -88,31 +97,72 @@ const TaskModal = ({ open, onClose, task, defaultColumnId, columns, members, act
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={isEdit ? "Edit task" : "New task"} size="md">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={isEdit ? "Edit task" : "New task"}
+      size="md"
+    >
       <form onSubmit={onSubmit} className="space-y-4">
-        <Input label="Title" placeholder="What needs to be done?" autoFocus value={form.title} onChange={set("title")} />
-        <Textarea label="Description" rows={4} placeholder="Add more detail…" value={form.description} onChange={set("description")} />
+        <Input
+          label="Title"
+          placeholder="What needs to be done?"
+          autoFocus
+          value={form.title}
+          onChange={set("title")}
+        />
+        <Textarea
+          label="Description"
+          rows={4}
+          placeholder="Add more detail…"
+          value={form.description}
+          onChange={set("description")}
+        />
 
         <div className="grid grid-cols-2 gap-4">
-          <Select label="Priority" value={form.priority} onChange={set("priority")}>
+          <Select
+            label="Priority"
+            value={form.priority}
+            onChange={set("priority")}
+          >
             {PRIORITIES.map((p) => (
-              <option key={p.value} value={p.value}>{p.label}</option>
+              <option key={p.value} value={p.value}>
+                {p.label}
+              </option>
             ))}
           </Select>
-          <Input label="Due date" type="date" value={form.due_date} onChange={set("due_date")} />
+          <Input
+            label="Due date"
+            type="date"
+            value={form.due_date}
+            onChange={set("due_date")}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <Select label="Assignee" value={form.assignee_id} onChange={set("assignee_id")}>
+          <Select
+            label="Assignee"
+            value={form.assignee_id}
+            onChange={set("assignee_id")}
+          >
             <option value="">Unassigned</option>
-            {members.map((m) => (
-              <option key={m.id} value={m.id}>{m.name}</option>
-            ))}
+            {members &&
+              members.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name}
+                </option>
+              ))}
           </Select>
           {!isEdit && (
-            <Select label="Column" value={form.column_id} onChange={set("column_id")}>
+            <Select
+              label="Column"
+              value={form.column_id}
+              onChange={set("column_id")}
+            >
               {columns.map((c) => (
-                <option key={c.id} value={c.id}>{c.title}</option>
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
               ))}
             </Select>
           )}
@@ -121,19 +171,35 @@ const TaskModal = ({ open, onClose, task, defaultColumnId, columns, members, act
         <div className="flex items-center justify-between gap-2 pt-2">
           <div>
             {isEdit && (
-              <Button type="button" variant="ghost" onClick={handleDelete} className="text-priority-urgent">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleDelete}
+                className="text-priority-urgent"
+              >
                 <Trash2 className="h-4 w-4" /> Delete
               </Button>
             )}
           </div>
           <div className="flex gap-2">
             {isEdit && (
-              <Button type="button" variant="outline" onClick={handleBreakdown} disabled={breakingDown}>
-                {breakingDown ? <Loader2 className="h-4 w-4 animate-spin" /> : <GitBranch className="h-4 w-4" />}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBreakdown}
+                disabled={breakingDown}
+              >
+                {breakingDown ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <GitBranch className="h-4 w-4" />
+                )}
                 AI breakdown
               </Button>
             )}
-            <Button type="submit" loading={saving}>{isEdit ? "Save" : "Create task"}</Button>
+            <Button type="submit" loading={saving}>
+              {isEdit ? "Save" : "Create task"}
+            </Button>
           </div>
         </div>
       </form>
