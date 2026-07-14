@@ -7,7 +7,8 @@ const requireAuth = (req, res, next) => {
     const token = header.startsWith("Bearer") ? header.slice(7) : null;
     if (!token) throw ApiError.unauthorized("Missing authentication token");
     const decoded = verifyToken(token);
-    res.user = { id: decoded.id, email: decoded.email, name: decoded.name };
+    // console.log("decoded - ", decoded);
+    req.user = { id: decoded.id, email: decoded.email, name: decoded.name };
     next();
   } catch (err) {
     if (err.isApiError) return next(err);

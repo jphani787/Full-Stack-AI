@@ -60,14 +60,12 @@ const login = asyncHandler(async (req, res) => {
   if (!password || password.length < 6)
     throw ApiError.badRequest("Password must be at least 6 characters");
 
-  const { rows } = await query("SELECT id FROM users WHERE email = $1", [
-    email,
-  ]);
+  const { rows } = await query("SELECT * FROM users WHERE email = $1", [email]);
   const user = rows[0];
-
   if (!user) throw ApiError.unauthorized("Invalid email or password");
 
-  const valid = await bcrypt.compare(password, user.password_auth);
+  // console.log("user - ", user.password_hash);
+  const valid = await bcrypt.compare(password, user.password_hash);
   if (!valid) throw ApiError.unauthorized("Invalid email or password");
   const token = signToken({ id: user.id, name: user.name, email: user.email });
   res.json({
@@ -79,7 +77,7 @@ const login = asyncHandler(async (req, res) => {
 const me = asyncHandler(async (req, res) => {
   const { rows } = await query(
     "SELECT id, name, email, avatar_url, created_at FROM users WHERE id = $1",
-    [res.user.id],
+    [req.user.id],
   );
 
   if (rows && !rows.length) throw ApiError.notFound("User not found");
