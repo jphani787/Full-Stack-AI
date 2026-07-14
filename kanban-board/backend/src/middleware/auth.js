@@ -1,14 +1,13 @@
 const { verifyToken } = require("../utils/jwt");
 const ApiError = require("../utils/ApiError");
 
-const requireAuth = (req, _res, next) => {
+const requireAuth = (req, res, next) => {
   try {
     const header = req.headers.authorization || "";
-    const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+    const token = header.startsWith("Bearer") ? header.slice(7) : null;
     if (!token) throw ApiError.unauthorized("Missing authentication token");
-
     const decoded = verifyToken(token);
-    res.user = { id: decoded, email: decoded.email, name: decoded.name };
+    res.user = { id: decoded.id, email: decoded.email, name: decoded.name };
     next();
   } catch (err) {
     if (err.isApiError) return next(err);
